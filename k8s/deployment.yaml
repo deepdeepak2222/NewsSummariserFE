@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newssummariser-fe
+  labels:
+    app: newssummariser-fe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: newssummariser-fe
+  template:
+    metadata:
+      labels:
+        app: newssummariser-fe
+    spec:
+      containers:
+      - name: frontend
+        image: deepdeepak2222/newssummariser-fe:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+        # Note: VITE_API_URL must be set at build time
+        # The image should be built with: docker build --build-arg VITE_API_URL=http://newssummariser-service:8000
+        # For NodePort access, you may need to rebuild with the NodePort URL or use ingress
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+

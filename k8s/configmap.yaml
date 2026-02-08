@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: newssummariser-fe-config
+  labels:
+    app: newssummariser-fe
+data:
+  config.js: |
+    // Runtime configuration for API URL
+    (function() {
+      // For NodePort access, use the backend NodePort
+      // Update this with your actual minikube IP and NodePort
+      // Or use ingress with /api path for same-origin access
+      
+      // Option 1: If using ingress with /api path
+      if (window.location.pathname.startsWith('/api')) {
+        window.__API_URL__ = window.location.origin + '/api';
+      }
+      // Option 2: For NodePort, you need to set the actual URL
+      // This will be replaced by the actual minikube IP during deployment
+      // Example: window.__API_URL__ = 'http://192.168.49.2:30081';
+      else {
+        // Default: try to detect from current host
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        // For same-host, different port (common in development)
+        window.__API_URL__ = protocol + '//' + hostname + ':30081';
+      }
+    })();
+
