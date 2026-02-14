@@ -29,6 +29,7 @@ export const fetchSummary = async (apiUrl, formData) => {
         location: formData.location || '',
         max_articles: formData.maxArticles || 10,
         language: formData.language || 'Hindi',
+        when: formData.when || '1d', // Add time filter parameter
       },
       {
         timeout: 60000, // 60 seconds timeout

@@ -6,6 +6,7 @@ import NewsSummary from './components/NewsSummary'
 import ArticlesList from './components/ArticlesList'
 import { fetchSummary, checkHealth } from './services/api'
 import { getApiUrl } from './config'
+import { saveSearch } from './utils/searchHistory'
 
 function App() {
   const [loading, setLoading] = useState(false)
@@ -43,6 +44,15 @@ function App() {
       const data = await fetchSummary(API_URL, formData)
       setNewsData(data)
       setApiStatus('connected')
+      
+      // Save to search history
+      saveSearch({
+        query: formData.query,
+        location: formData.location,
+        maxArticles: formData.maxArticles,
+        language: formData.language,
+        when: formData.when || '1d'
+      })
     } catch (err) {
       setError(err.message || 'An error occurred while fetching news')
       setApiStatus('error')
@@ -70,9 +80,7 @@ function App() {
           {newsData && (
             <>
               <NewsSummary data={newsData} />
-              {newsData.articles && newsData.articles.length > 0 && (
-                <ArticlesList articles={newsData.articles} language={newsData.language} />
-              )}
+              {/* Articles are now shown within NewsSummary component */}
             </>
           )}
         </div>

@@ -9,10 +9,136 @@
   box-shadow: var(--shadow);
 }
 
-.form-title {
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.form-title {
+  margin: 0;
   color: var(--text-primary);
   font-size: clamp(1.25rem, 3vw, 1.5rem);
+}
+
+.history-toggle {
+  padding: 0.5rem 1rem;
+  background: var(--background);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.history-toggle:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.search-history {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.history-title {
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.history-item:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.history-item:hover .history-query,
+.history-item:hover .history-meta {
+  color: white;
+}
+
+.history-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-query {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.history-location,
+.history-language,
+.history-time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.history-delete {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.history-item:hover .history-delete {
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.history-delete:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
 .news-form {
