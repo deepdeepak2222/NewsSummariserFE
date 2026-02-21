@@ -27,7 +27,7 @@ export const fetchSummary = async (apiUrl, formData) => {
       {
         query: formData.query,
         location: formData.location || '',
-        max_articles: formData.maxArticles || 10,
+        max_articles: formData.maxArticles || null, // null = unlimited (fetch all in time range)
         language: formData.language || 'Hindi',
         when: formData.when || '1d', // Add time filter parameter
       },

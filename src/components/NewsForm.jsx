@@ -6,10 +6,11 @@ const NewsForm = ({ onSubmit, loading }) => {
   const [formData, setFormData] = useState({
     query: '',
     location: '',
-    maxArticles: 10,
+    maxArticles: null, // null = unlimited (fetch all in time range), number = limit
     language: 'Hindi',
     when: '1d', // Date filter: '1d' (last 24h), '7d' (last week), 'all' (all time)
   })
+  const [userSetMaxArticles, setUserSetMaxArticles] = useState(false) // Track if user manually set maxArticles
   const [showHistory, setShowHistory] = useState(false)
   const [searchHistory, setSearchHistory] = useState([])
 
@@ -18,19 +19,21 @@ const NewsForm = ({ onSubmit, loading }) => {
   }, [])
 
   const handleLoadFromHistory = (historyItem) => {
+    const maxArticles = historyItem.maxArticles !== undefined ? historyItem.maxArticles : null
     setFormData({
       query: historyItem.query,
       location: historyItem.location || '',
-      maxArticles: historyItem.maxArticles || 10,
+      maxArticles: maxArticles,
       language: historyItem.language || 'Hindi',
       when: historyItem.when || '1d',
     })
+    setUserSetMaxArticles(maxArticles !== null) // Track if history had maxArticles set
     setShowHistory(false)
     // Auto-submit
     onSubmit({
       query: historyItem.query,
       location: historyItem.location || '',
-      maxArticles: historyItem.maxArticles || 10,
+      maxArticles: maxArticles,
       language: historyItem.language || 'Hindi',
       when: historyItem.when || '1d',
     })
@@ -58,10 +61,26 @@ const NewsForm = ({ onSubmit, loading }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'maxArticles' ? parseInt(value) : value,
-    }))
+    if (name === 'maxArticles') {
+      // User manually changed maxArticles slider
+      setUserSetMaxArticles(true)
+      setFormData((prev) => ({
+        ...prev,
+        [name]: parseInt(value),
+      }))
+    } else if (name === 'when') {
+      // When time filter changes, reset maxArticles to null unless user manually set it
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        maxArticles: userSetMaxArticles ? prev.maxArticles : null,
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }))
+    }
   }
 
   const handleSubmit = (e) => {
@@ -164,20 +183,27 @@ const NewsForm = ({ onSubmit, loading }) => {
 
             <div className="form-group">
               <label htmlFor="maxArticles" className="form-label">
-                📊 Max Articles
+                📊 Max Articles {formData.maxArticles === null && '(Unlimited)'}
               </label>
               <input
                 type="range"
                 id="maxArticles"
                 name="maxArticles"
-                value={formData.maxArticles}
+                value={formData.maxArticles || 10}
                 onChange={handleChange}
                 min="1"
-                max="10"
+                max="50"
                 className="form-range"
                 disabled={loading}
               />
-              <div className="range-value">{formData.maxArticles}</div>
+              <div className="range-value">
+                {formData.maxArticles === null ? 'Unlimited' : formData.maxArticles}
+              </div>
+              <small className="form-help">
+                {formData.maxArticles === null 
+                  ? 'Fetching all articles in selected time range'
+                  : `Limiting to ${formData.maxArticles} articles`}
+              </small>
             </div>
 
             <div className="form-group">
