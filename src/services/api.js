@@ -1,4 +1,22 @@
 import axios from 'axios'
+import { getToken } from './auth'
+
+// Create axios instance with auth interceptor
+const apiClient = axios.create()
+
+// Add auth token to requests if available
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getToken()
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 export const checkHealth = async (apiUrl) => {
   try {
@@ -22,6 +40,12 @@ export const checkHealth = async (apiUrl) => {
 
 export const fetchSummary = async (apiUrl, formData) => {
   try {
+    const token = getToken()
+    const headers = {}
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+    
     const response = await axios.post(
       `${apiUrl}/summarize`,
       {
@@ -32,6 +56,7 @@ export const fetchSummary = async (apiUrl, formData) => {
         when: formData.when || '1d', // Add time filter parameter
       },
       {
+        headers,
         timeout: 60000, // 60 seconds timeout
       }
     )
