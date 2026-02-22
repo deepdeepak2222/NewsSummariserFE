@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import './Header.css'
 
-const Header = ({ apiStatus }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage or system preference
-    const saved = localStorage.getItem('darkMode')
-    if (saved !== null) {
-      return saved === 'true'
+const Header = ({ apiStatus, user }) => {
+  const { logout } = useAuth()
+  const [theme, setTheme] = useState(() => {
+    // Initialize theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme) {
+      return savedTheme
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })
 
   useEffect(() => {
-    // Apply theme to document
-    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
-    localStorage.setItem('darkMode', isDarkMode.toString())
-  }, [isDarkMode])
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'))
   }
 
   const getStatusIcon = () => {
@@ -51,13 +52,30 @@ const Header = ({ apiStatus }) => {
           <h1>News Summarizer</h1>
         </div>
         <div className="header-actions">
-          <button
-            onClick={toggleDarkMode}
-            className="theme-toggle"
-            aria-label="Toggle dark mode"
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {isDarkMode ? '☀️' : '🌙'}
+          {user ? (
+            <div className="user-info">
+              <span className="user-name">👤 {user.username}</span>
+              <span className="user-badge">Premium</span>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  logout()
+                }} 
+                className="logout-button" 
+                title="Logout"
+              >
+                <span className="logout-icon">🚪</span>
+                <span className="logout-text">Logout</span>
+              </button>
+            </div>
+          ) : (
+            <div className="guest-badge">
+              <span>Guest User</span>
+            </div>
+          )}
+          <button onClick={toggleTheme} className="theme-toggle-button" aria-label="Toggle theme">
+            {theme === 'light' ? '🌙' : '☀️'}
           </button>
           <div className={`api-status ${apiStatus}`}>
             <span className="status-icon">{getStatusIcon()}</span>
@@ -70,4 +88,3 @@ const Header = ({ apiStatus }) => {
 }
 
 export default Header
-
